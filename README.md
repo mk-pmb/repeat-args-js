@@ -136,6 +136,8 @@ equal(r.times(2).arar(3.14, 15),  [3.14, 15, 3.14, 15]);
 Use the first argument as the _source_ parameter.
 The _list_ means anything that `Array.prototype.slice` can make an array from.
 
+(Buffer support is planned but not implemented yet.)
+
 
 ### r.str(x)
 
@@ -234,6 +236,7 @@ equal(r.mthd(fiboMtd).len(6)(['AB', 'rs']),
 Known issues
 ------------
 
+* Buffer support isn't implemented yet.
 * It can't work async. Try the `times` function from the `async` module.
   or promises.
 * Needs more/better tests and docs.

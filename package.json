@@ -1,5 +1,5 @@
 { "name": "repeat-args",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yet another take at repeating arrays and values.",
   "keywords": [
     "array",

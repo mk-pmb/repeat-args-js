@@ -4,12 +4,14 @@
 
 var equal = require('assert').deepStrictEqual;
 
+function catchStr(f) { try { f(); } catch (err) { return String(err); } }
+function fails(f, e) { equal(catchStr(f), e); }
+function ifSupported(f) { try { return f(); } catch (ignore) {} }
+
 (function readmeDemo() {
   //#require
   var r = require('repeat-args'), x = '.o°';
   //#
-  function catchStr(f) { try { f(); } catch (err) { return String(err); } }
-  function fails(f, e) { equal(catchStr(f), e); }
 
   //#r-times3-brackets
   equal(r.times(3)(x),           '.o°.o°.o°');
@@ -38,7 +40,7 @@ var equal = require('assert').deepStrictEqual;
   equal(r(x).len(2),    '.o');
   equal(r(x).len(1),    '.');
   equal(r(x).len(0),    '');
-  fails(function () { r.seq(x).len(-1); },
+  fails(function () { r(x).len(-1); },
     'TypeError: Expected a positive number, or zero.');
 
   //#r-hi57
@@ -101,6 +103,13 @@ var equal = require('assert').deepStrictEqual;
   equal(r.mthd(fiboMtd).len(6)(['AB', 'rs']),
     [ 'AB', 'rs', 'rsAB', 'rsABrs', 'rsABrsrsAB', 'rsABrsrsABrsABrs' ]);
   //#
+
+
+  x = ifSupported(function () { return Buffer.from('.o°'); });
+  if (x) {
+    equal(r.times(3)(x),        Buffer.from('.o°.o°.o°'));
+    equal(r.len(7)(x),          Buffer.from('.o°.o°.'));
+  }
 
 
 }());
