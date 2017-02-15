@@ -1,0 +1,30 @@
+{ "name": "repeat-args",
+  "version": "0.1.0",
+  "description": "Yet another take at repeating arrays and values.",
+  "keywords": [
+    "array",
+    "repeat",
+    "string"
+  ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/repeat-args-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/repeat-args-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/repeat-args-js/issues"
+  },
+
+  "private": false, "license": "ISC",
+
+  "main": "r.js",
+  "scripts": { "test": "nodejs test/all.js" },
+  "directories": { "test": "test" },
+
+  "devDependencies": { "equal-pmb": "^0.1.0" },
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
