@@ -113,6 +113,7 @@ function readmeDemo(equal) {
     equal(r.len(9)(x),      Buffer.from('.o°.o°.'));  // 7 chars in 9 bytes
   }
   //#
+  if (!x) { console.warn('W: skip buffer test: not supported by platform'); }
 
 
   console.log("+OK usage test passed.");    //= "+OK usage test passed."

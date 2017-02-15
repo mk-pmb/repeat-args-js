@@ -1,5 +1,5 @@
 { "name": "repeat-args",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Yet another take at repeating sequences (string, array, array-like, buffer), also in browsers (UMD).",
   "keywords": [
     "AMD",
