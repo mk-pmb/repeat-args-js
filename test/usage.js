@@ -2,13 +2,12 @@
 /* -*- tab-width: 2 -*- */
 'use strict';
 
-var equal = require('assert').deepStrictEqual;
+function readmeDemo(equal) {
+  equal = require('assert').deepStrictEqual;
+  function catchStr(f) { try { f(); } catch (err) { return String(err); } }
+  function fails(f, e) { equal(catchStr(f), e); }
+  function ifSupported(f) { try { return f(); } catch (ignore) {} }
 
-function catchStr(f) { try { f(); } catch (err) { return String(err); } }
-function fails(f, e) { equal(catchStr(f), e); }
-function ifSupported(f) { try { return f(); } catch (ignore) {} }
-
-(function readmeDemo() {
   //#require
   var r = require('repeat-args'), x = '.o°';
   //#
@@ -105,21 +104,31 @@ function ifSupported(f) { try { return f(); } catch (ignore) {} }
   //#
 
 
+  //#buffer
   x = ifSupported(function () { return Buffer.from('.o°'); });
   if (x) {
-    equal(r.times(3)(x),        Buffer.from('.o°.o°.o°'));
-    equal(r.len(7)(x),          Buffer.from('.o°.o°.'));
+    equal(x.length, 4);     // in UTF-8, '°' costs 2 bytes.
+    equal(r.times(3)(x),    Buffer.from('.o°.o°.o°'));
+    equal(12,               Buffer.from('.o°.o°.o°').length);
+    equal(r.len(9)(x),      Buffer.from('.o°.o°.'));  // 7 chars in 9 bytes
   }
+  //#
 
 
-}());
-
-
-
-
-
+  console.log("+OK usage test passed.");    //= "+OK usage test passed."
+}
 
 
 
 
-console.log("+OK usage test passed.");    //= "+OK usage test passed."
+
+
+
+
+(function (e) {
+  /*global define: true */
+  var d = ((typeof define === 'function') && define),
+    m = ((typeof module === 'object') && module);
+  if (d && d.amd) { d(function () { return e; }); }
+  if (m && m.exports) { m.exports = e; }
+}(readmeDemo));

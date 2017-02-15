@@ -1,10 +1,13 @@
 { "name": "repeat-args",
-  "version": "0.1.1",
-  "description": "Yet another take at repeating arrays and values.",
+  "version": "0.1.2",
+  "description": "Yet another take at repeating sequences (string, array, array-like, buffer), also in browsers (UMD).",
   "keywords": [
+    "AMD",
     "array",
+    "buffer",
     "repeat",
-    "string"
+    "string",
+    "UMD"
   ],
 
   "author": "M.K. (https://github.com/mk-pmb)",

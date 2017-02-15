@@ -5,7 +5,8 @@ repeat-args
 <!--/#echo -->
 
 <!--#echo json="package.json" key="description" -->
-Yet another take at repeating arrays and values.
+Yet another take at repeating sequences (string, array, array-like, buffer),
+also in browsers (UMD).
 <!--/#echo -->
 
 
@@ -136,7 +137,19 @@ equal(r.times(2).arar(3.14, 15),  [3.14, 15, 3.14, 15]);
 Use the first argument as the _source_ parameter.
 The _list_ means anything that `Array.prototype.slice` can make an array from.
 
-(Buffer support is planned but not implemented yet.)
+<!--#include file="test/usage.js" start="  //#buffer" stop="  //#"
+  outdent="  " code="javascript" -->
+<!--#verbatim lncnt="9" -->
+```javascript
+x = ifSupported(function () { return Buffer.from('.o°'); });
+if (x) {
+  equal(x.length, 4);     // in UTF-8, '°' costs 2 bytes.
+  equal(r.times(3)(x),    Buffer.from('.o°.o°.o°'));
+  equal(12,               Buffer.from('.o°.o°.o°').length);
+  equal(r.len(9)(x),      Buffer.from('.o°.o°.'));  // 7 chars in 9 bytes
+}
+```
+<!--/include-->
 
 
 ### r.str(x)
@@ -236,7 +249,6 @@ equal(r.mthd(fiboMtd).len(6)(['AB', 'rs']),
 Known issues
 ------------
 
-* Buffer support isn't implemented yet.
 * It can't work async. Try the `times` function from the `async` module.
   or promises.
 * Needs more/better tests and docs.

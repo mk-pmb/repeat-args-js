@@ -4,6 +4,6 @@
 
 try { require('usnam-pmb'); } catch (ignore) {}
 
-require('./usage.js');
+require('./usage.js')();
 
 console.log("+OK all tests passed.");   //= "+OK all tests passed."

@@ -16,10 +16,15 @@
   function ifObj(x, d) { return ((x && typeof x) === 'object' ? x : d); }
   //function withThis(f) { return function () { return f(this); }; }
   function errExpectType(msg) { throw new TypeError('Expected ' + msg); }
+  function ifSupported(f) { try { return f(); } catch (ignore) {} }
+  function nope() { return false; }
+  function sumLengths(sum, item) { return sum + item.length; }
 
   var mR, optSeq = 0, optTimes = 1, optLen = 2, optAddFunc = 3,
     lcopy = { call: function (src, maxN) { return src.slice(0, maxN); } },
-    arSlice = Array.prototype.slice;
+    arSlice = Array.prototype.slice,
+    tokenIsSequence = { token: 'This is a sequence' },
+    isBuffer = (ifSupported(function () { return Buffer.isBuffer; }) || nope);
 
 
   function coreRepeat(cfg, seq, wantLen) {
@@ -35,6 +40,7 @@
       prevRemain = remain;
       remain = wantLen - seq.length;
     }
+    if ((seq.isSeq === tokenIsSequence) && seq.unwrap) { seq = seq.unwrap(); }
     return seq;
   }
 
@@ -51,9 +57,63 @@
     return mR(cfg);
   }
 
+  function bufSeqSlice(offset, remain) {
+    if (offset !== 0) { throw new Error('Offset not supported'); }
+    var srcBufs = this.bufs, sbCnt, sbIdx, srcBuf, sbLen, slBufs;
+    //console.log({ srcBufs: srcBufs, rmn: remain });
+    if (this.length <= remain) { return srcBufs; }
+    sbCnt = srcBufs.length;
+    slBufs = [];
+    slBufs.totalBytes = 0;
+    for (sbIdx = 0; (remain > 0) && (sbIdx < sbCnt); sbIdx += 1) {
+      srcBuf = srcBufs[sbIdx];
+      sbLen = srcBuf.length;
+      if (sbLen > remain) {
+        slBufs.push(srcBuf.slice(0, remain));
+        slBufs.totalBytes += remain;
+        remain = 0;
+      } else {
+        slBufs.push(srcBuf);
+        slBufs.totalBytes += sbLen;
+        remain -= sbLen;
+      }
+    }
+    //console.log({ slBufs: slBufs });
+    return slBufs;
+  }
+
+  function bufSeqConcatInplace(moreBufs) {
+    var tb = moreBufs.totalBytes;
+    if (tb !== +tb) { tb = moreBufs.reduce(sumLengths, 0); }
+    this.bufs = this.bufs.concat(moreBufs);
+    //console.log({ bufs: this.bufs });
+    this.length += tb;
+    this.bufs.totalBytes = this.length;
+    return this;
+  }
+
+  function bufSeqUnwrap() {
+    return Buffer.concat(this.bufs, this.totalBytes);
+  }
+
+  function makeBufSeq(b) {
+    var l = [ b ], n = b.length, s = { bufs: l, length: n,
+      slice:  bufSeqSlice,
+      concat: bufSeqConcatInplace,
+      unwrap: bufSeqUnwrap,
+      isSeq: tokenIsSequence };
+    l.totalBytes = n;
+    //console.log({ makeBufSeq: s });
+    return s;
+  }
+
   function toSeq(x) {
     if (isStr(x)) { return x; }
-    if (ifObj(x)) { return arSlice.call(x); }
+    if (ifObj(x)) {
+      if (x.isSeq === tokenIsSequence) { return x; }
+      if (isBuffer(x)) { return makeBufSeq(x); }
+      return arSlice.call(x);
+    }
     return;
   }
 
@@ -61,7 +121,8 @@
     if (a.length === 0) { return ''; }  // fallback should be false-y
     var x = toSeq(a[0]);
     if (x === undefined) { return a; }
-    return (a.length > 1 ? x.concat.apply(x, arSlice.call(a, 1)) : x);
+    if (a.length < 2) { return x; }
+    return x.concat.apply(x, arSlice.call(a, 1));
   }
 
   function makeOptSetter(validate, origCfg, slot) {
